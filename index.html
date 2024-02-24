@@ -12,6 +12,14 @@
         $(document).ready(function() {
             toggleNotificationType();
             $('input[name="notificationType"]').change(toggleNotificationType);
+            document.getElementById('copyToClipboardBtn').addEventListener('click', function() {
+                const jsonText = document.getElementById('result').innerText;
+                navigator.clipboard.writeText(jsonText).then(() => {
+                    alert('Copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
         });
 
         function toggleNotificationType() {
@@ -69,10 +77,12 @@
                 if ($('#videoUrl').val()) config.videoUrl = $('#videoUrl').val();
             }
 
-            let finalConfig = {};
-            finalConfig[notificationType] = [config];
+            let finalConfig = [config]; // Directly use an array
 
-            $('#result').text(JSON.stringify(finalConfig, null, 2));
+            // Convert to JSON string
+            let jsonString = `"${notificationType}": ` + JSON.stringify(finalConfig, null, 2) + `,`;
+
+            $('#result').text(jsonString);
         }
     </script>
 </head>
@@ -103,7 +113,7 @@
 
             </div>
             <div class="form-check">
-                <input type="checkbox" id="disabled" class="form-check-input">
+                <input type="checkbox" id="disabled" class="form-check-input" checked>
                 <label class="form-check-label" for="disabled">Disabled</label>
                 <small class="form-text text-muted">disable this notification </small>
 
@@ -162,6 +172,8 @@
 
         <h3 class="mt-4">Generated JSON:</h3>
         <pre id="result"></pre>
+        <button id="copyToClipboardBtn" class="btn btn-secondary mt-2">Copy to Clipboard</button>
+
     </div>
 </body>
 </html>
